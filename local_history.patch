@@ -1,0 +1,61 @@
+Index: clients/src/Client.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- clients/src/Client.java	(date 1605837207246)
++++ clients/src/Client.java	(date 1605837207246)
+@@ -50,7 +50,7 @@
+ 
+ public class Client implements Runnable {
+     private Socket socket = null;
+-    private Thread thread = null;
++    private Thread thread = null;private DataInputStream streamIn = null;
+     private DataInputStream console = null;
+     private DataOutputStream streamOut = null;
+     private ChatClientThread client = null;
+@@ -62,6 +62,8 @@
+         try {
+             socket = new Socket(serverName, serverPort);
+             System.out.println("Connected: " + socket);
++            DataInputStream dis = new DataInputStream(socket.getInputStream());
++            System.out.println(dis.readUTF());
+             start();
+         } catch (UnknownHostException uhe) {
+             System.out.println("Host unknown: " + uhe.getMessage());
+@@ -73,7 +75,15 @@
+     public void run() {
+         while (thread != null) {
+             try {
+-                streamOut.writeUTF(user_name+console.readLine());
++                Scanner input= new Scanner(System.in);
++//
++                System.out.println("Please, Enter your name");
++                 user_name = input.nextLine()+"> ";
++                System.out.println("welcome, Write something now");
++                String msg = console.readLine();
++//                String key = streamOut.writeUTF();
++
++                streamOut.writeUTF(user_name+msg);
+                 streamOut.flush();
+             } catch (IOException ioe) {
+                 System.out.println("Sending error: " + ioe.getMessage());
+@@ -91,9 +101,7 @@
+     }
+ 
+     public void start() throws IOException {
+-        Scanner input= new Scanner(System.in);
+-        System.out.println("Please, Enter your name");
+-        String user_name = input.nextLine()+"> ";
++
+         console = new DataInputStream(System.in);
+ 
+ 
+@@ -123,7 +131,6 @@
+ 
+     public static void main(String args[]) {
+ 
+-
+         new Client("localhost", 9090);
+     }
+ }
